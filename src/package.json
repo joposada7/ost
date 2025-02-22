@@ -13,11 +13,22 @@
   "license": "MIT",
   "author": "joposada7@gmail.com",
   "type": "commonjs",
-  "main": "app.js",
+  "main": "app/app.js",
   "scripts": {
-    "test": "echo 1"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
   "dependencies": {
-    "express": "^4.21.2"
+    "express": "^4.21.2",
+    "next": "^15.1.7",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "22.13.5",
+    "@types/react": "19.0.10",
+    "typescript": "5.7.3"
   }
 }
