@@ -1,0 +1,23 @@
+{
+  "name": "ost",
+  "version": "1.0.0",
+  "description": "overhead spacecraft tracker node server",
+  "homepage": "https://github.com/joposada7/ost#readme",
+  "bugs": {
+    "url": "https://github.com/joposada7/ost/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joposada7/ost.git"
+  },
+  "license": "MIT",
+  "author": "joposada7@gmail.com",
+  "type": "commonjs",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo 1"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
