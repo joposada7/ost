@@ -9,7 +9,7 @@ import { Icon } from 'leaflet';
 const Leaflet = () => {
 
     const customIcon = new Icon({
-        iconUrl: "../markers.png",
+        iconUrl: "images/markers.png",
         iconSize: [38,38]
     })
 
