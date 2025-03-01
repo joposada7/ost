@@ -1,2 +1,13 @@
+# Build files
 node_modules/
 .next/
+
+# Environment files
+.env/
+
+# Editor files
+.vscode
+
+# Git
+.git/
+.gitignore
