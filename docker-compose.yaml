@@ -1,0 +1,14 @@
+services:
+  frontend:
+    build:
+      context: /frontend
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    develop:
+      watch:
+        - action: sync
+          path: /frontend
+          target: /app
+        - action: rebuild
+          path: /frontend/package.json
