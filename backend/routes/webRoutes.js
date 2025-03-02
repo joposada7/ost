@@ -13,6 +13,7 @@ function getExt(p) {
         return a.pop();
     }
 }
+const FRONTEND_HOST = process.env.FRONTEND_HOST || 'localhost';
 
 const router = express();
 router.use((req, res, next) => {
@@ -22,7 +23,7 @@ router.use((req, res, next) => {
         next();
     } else {
         // Request from frontend
-        axios.get(path.join(`http://host.docker.internal:3000`, req.url))
+        axios.get(path.join(`http://${FRONTEND_HOST}:3000`, req.url))
           .then(response => {
             res.header('Expires', '-1');
             res.header('Pragma', 'no-cache');

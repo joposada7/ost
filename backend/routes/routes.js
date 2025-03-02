@@ -22,6 +22,8 @@ router.use((req, res, next) => {
     }
 });
 
+module.exports.router = router;
+
 // Start listening on backend
 const http = require('http');
 const port = process.env.PORT || 8080;
