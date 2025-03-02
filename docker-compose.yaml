@@ -2,9 +2,15 @@ services:
   frontend:
     build:
       context: /frontend
-      dockerfile: Dockerfile
+    volumes:
+      - type: volume
+        source: public-assets
+        target: /app/public
+      - type: volume
+        source: next-assets
+        target: /app/.next
     ports:
-      - 3000:3000
+      - "3000:3000"
     develop:
       watch:
         - action: sync
@@ -12,3 +18,28 @@ services:
           target: /app
         - action: rebuild
           path: /frontend/package.json
+  backend:
+    build:
+      context: /backend
+    volumes:
+      - type: volume
+        source: public-assets
+        target: /frontend/public
+      - type: volume
+        source: next-assets
+        target: /frontend/.next
+    ports:
+      - "8080:8080"
+    develop:
+      watch:
+        - action: sync+restart
+          path: /backend
+          target: /backend
+    environment:
+      FRONTEND_HOST: "host.docker.internal"
+
+volumes:
+  public-assets:
+    external: false
+  next-assets:
+    external: false
