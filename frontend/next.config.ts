@@ -4,7 +4,8 @@ const nextConfig: NextConfig = {
   /* config options here */
   eslint: {
     ignoreDuringBuilds: true,
-  }
+  },
+  distDir: 'app/.next',
 };
 
 export default nextConfig;

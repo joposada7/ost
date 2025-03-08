@@ -1,16 +1,17 @@
 services:
   frontend:
     build:
-      context: /frontend
+      context: ./frontend
     volumes:
       - type: volume
         source: public-assets
         target: /app/public
+        read_only: false
       - type: volume
-        source: next-assets
-        target: /app/.next
-    ports:
-      - "3000:3000"
+        source: static-assets
+        target: /app/.next/static
+        read_only: false
+    network_mode: "host"
     develop:
       watch:
         - action: sync
@@ -20,26 +21,18 @@ services:
           path: /frontend/package.json
   backend:
     build:
-      context: /backend
-    volumes:
-      - type: volume
-        source: public-assets
-        target: /frontend/public
-      - type: volume
-        source: next-assets
-        target: /frontend/.next
-    ports:
-      - "8080:8080"
+      context: ./backend
+    volumes_from:
+      - frontend:ro
+    network_mode: "host"
     develop:
       watch:
         - action: sync+restart
           path: /backend
           target: /backend
-    environment:
-      FRONTEND_HOST: "host.docker.internal"
 
 volumes:
   public-assets:
-    external: false
-  next-assets:
+   external: false
+  static-assets:
     external: false

@@ -1,3 +1,6 @@
+Dockerfile
+.dockerignore
+
 # Build files
 node_modules/
 .next/

@@ -1,10 +1,8 @@
 require('module-alias/register');
 const express = require('express');
-const cors = require('cors');
 
-// Declare CORS-enabled router
+// Declare router
 const router = express();
-router.use(cors());
 
 // Route
 const webRoutes = require('@routes/webRoutes.js').router;
@@ -21,8 +19,6 @@ router.use((req, res, next) => {
         res.type('txt').send('Not found').end();
     }
 });
-
-module.exports.router = router;
 
 // Start listening on backend
 const http = require('http');

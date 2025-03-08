@@ -13,38 +13,37 @@ function getExt(p) {
         return a.pop();
     }
 }
-const FRONTEND_HOST = process.env.FRONTEND_HOST || 'localhost';
 
+const FRONTEND_HOST = process.env.FRONTEND_HOST || 'localhost';
 const router = express();
+
 router.use((req, res, next) => {
     const ext = getExt(req.url);
     if (ext && !(ext === 'js')) {
-        // Serve static asset from public
+        // Serve static asset
         next();
     } else {
         // Request from frontend
-        axios.get(path.join(`http://${FRONTEND_HOST}:3000`, req.url))
-          .then(response => {
-            res.header('Expires', '-1');
-            res.header('Pragma', 'no-cache');
-            res.status(200).header(response.headers).end(response.data);
-          })
-          .catch(err => {
-            if (!err.request && !err.response) {
-                console.log(`${err.message} trying to access ${req.url}`);
-                res.status(500).send('Connection refused');
-            } else {
-                console.log(`${err.message} trying to access ${req.url}`);
-                next();
-            }
-          });
+        axios({
+          method: req.method,
+          url: path.join(`http://${FRONTEND_HOST}:3000`, req.url),
+          headers: req.headers,
+          params: req.params,
+          data: req.data,
+          timeout: 200
+        }).then(response => {
+          res.status(response.status).header(response.headers).end(response.data);
+        }).catch(err => {
+          console.log(`${err.message} trying to access ${req.url}`);
+          res.status(err.status).send(err.message);
+        });
     }
 });
 
 // Serve static assets
-const publicDir = path.join(__dirname, '..', '..', 'frontend', 'public');
-const nextDir = path.join(__dirname, '..', '..', 'frontend', '.next');
-router.use(express.static(publicDir));
+const nextDir = path.resolve('/app/.next');
+const publicDir = path.resolve('/app/public');
 router.use('/_next', express.static(nextDir));
+router.use(express.static(publicDir));
 
 module.exports.router = router;
