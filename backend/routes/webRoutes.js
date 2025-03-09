@@ -15,6 +15,7 @@ function getExt(p) {
 }
 
 const FRONTEND_HOST = process.env.FRONTEND_HOST || 'localhost';
+const FRONTEND_TIMEOUT = process.env.NODE_ENV === 'production' ? process.env.FRONTEND_TIMEOUT : 0;
 const router = express();
 
 router.use((req, res, next) => {
@@ -30,12 +31,12 @@ router.use((req, res, next) => {
           headers: req.headers,
           params: req.params,
           data: req.data,
-          timeout: 200
+          timeout: FRONTEND_TIMEOUT
         }).then(response => {
           res.status(response.status).header(response.headers).end(response.data);
         }).catch(err => {
           console.log(`${err.message} trying to access ${req.url}`);
-          res.status(err.status).send(err.message);
+          res.status(500).send(err.message);
         });
     }
 });

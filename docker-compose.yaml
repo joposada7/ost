@@ -2,6 +2,7 @@ services:
   frontend:
     build:
       context: ./frontend
+      target: ${NODE_ENV}
     volumes:
       - type: volume
         source: public-assets
@@ -11,7 +12,8 @@ services:
         source: static-assets
         target: /app/.next/static
         read_only: false
-    network_mode: "host"
+    ports:
+      - "3000:3000"
     develop:
       watch:
         - action: sync
@@ -19,20 +21,32 @@ services:
           target: /app
         - action: rebuild
           path: /frontend/package.json
+    networks:
+      - shared-network
   backend:
     build:
       context: ./backend
+    environment:
+      - FRONTEND_HOST=${DOCKER_HOSTNAME}
+      - NODE_ENV=${NODE_ENV}
     volumes_from:
       - frontend:ro
-    network_mode: "host"
+    ports:
+      - "8080:8080"
     develop:
       watch:
         - action: sync+restart
           path: /backend
           target: /backend
+    networks:
+      - shared-network
 
 volumes:
   public-assets:
    external: false
   static-assets:
     external: false
+
+networks:
+  shared-network:
+    driver: ${NETWORK_DRIVER}
