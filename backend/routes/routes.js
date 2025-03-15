@@ -20,9 +20,28 @@ router.use((req, res, next) => {
     }
 });
 
+// Set up websocket
+const server = require('http').createServer(router);
+const io = require('socket.io')(server, {});
+io.on('connection', (socket) => {
+    console.log('Connected');
+
+    socket.conn.once('upgrade', () => {
+        console.log(`Transport upgraded to ${socket.conn.transport.name}`);
+    })
+
+    socket.on('message', (message) => {
+        console.log(`Got message: ${message}`);
+        io.emit('message', `There was a message ${message}`);
+    })
+
+    socket.conn.on('close', (reason) => {
+        console.log(`Connection closed: ${reason}`);
+    })
+})
+
 // Start listening on backend
-const http = require('http');
 const port = process.env.PORT || 8080;
-http.createServer(router).listen(port, () => {
+server.listen(port, () => {
     console.log(`Listening on port ${port}`);
 });
