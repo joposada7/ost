@@ -3,7 +3,7 @@
 
 import dynamic from 'next/dynamic';
 
-const MapComponent = dynamic(() => import('./(map-test)/leaflet'), {
+const MapComponent = dynamic(() => import('./(components)/leaflet'), {
   ssr: false,
   loading: () => <p>Loading map...</p>
 });
