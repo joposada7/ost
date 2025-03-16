@@ -14,7 +14,7 @@ function getExt(p) {
     }
 }
 
-const FRONTEND_HOST = process.env.FRONTEND_HOST || 'localhost';
+const DOCKER_HOSTNAME = process.env.DOCKER_HOSTNAME || 'localhost';
 const FRONTEND_TIMEOUT = process.env.NODE_ENV === 'production' ? process.env.FRONTEND_TIMEOUT : 0;
 const router = express();
 
@@ -27,7 +27,7 @@ router.use((req, res, next) => {
         // Request from frontend
         axios({
           method: req.method,
-          url: path.join(`http://${FRONTEND_HOST}:3000`, req.url),
+          url: path.join(`http://${DOCKER_HOSTNAME}:3000`, req.url),
           headers: req.headers,
           params: req.params,
           data: req.data,

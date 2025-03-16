@@ -4,6 +4,13 @@ const express = require('express');
 // Declare router
 const router = express();
 
+// CORS header
+router.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', `http://localhost:3000 http://${DOCKER_HOSTNAME}:3000`);
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    next();
+});
+
 // Route
 const webRoutes = require('@routes/webRoutes.js').router;
 router.use('/', webRoutes);
@@ -20,28 +27,40 @@ router.use((req, res, next) => {
     }
 });
 
-// Set up websocket
+const DOCKER_HOSTNAME = process.env.DOCKER_HOSTNAME || 'localhost';
 const server = require('http').createServer(router);
-const io = require('socket.io')(server, {});
+const socketio = require('socket.io');
+
+// Set up websocket
+const io = new socketio.Server(server, {
+    transports: ['websocket', 'polling'],
+    cors: {
+        origin: [`http://${DOCKER_HOSTNAME}:3000`],
+    },
+});
 io.on('connection', (socket) => {
-    console.log('Connected');
+    console.log(`socket: connected with id ${socket.id}`);
 
     socket.conn.once('upgrade', () => {
-        console.log(`Transport upgraded to ${socket.conn.transport.name}`);
-    })
-
-    socket.on('message', (message) => {
-        console.log(`Got message: ${message}`);
-        io.emit('message', `There was a message ${message}`);
-    })
-
-    socket.conn.on('close', (reason) => {
-        console.log(`Connection closed: ${reason}`);
-    })
-})
+        console.log(`socket: transport upgraded to ${socket.conn.transport.name}`);
+        console.log(`socket: client requested from '${socket.client.request.origin}'`);
+    });
+    
+    socket.on('disconnect', (reason) => {
+        console.log(`socket: connection with id ${socket.id} closed with reason '${reason}'`);
+    });
+    
+    // Emit a single message to the client on connection
+    console.log(`socket: transmitting message`);
+    io.emit('message', {
+        data: 'hello from the server!',
+    });
+});
 
 // Start listening on backend
-const port = process.env.PORT || 8080;
-server.listen(port, () => {
-    console.log(`Listening on port ${port}`);
+const PORT = process.env.PORT || 8080;
+server.listen(PORT, () => {
+    console.log(`> Running node.js backend on port ${PORT}`);
+    console.log(`> Local:     http://localhost:${PORT}`);
+    console.log(`> Network:   http://${DOCKER_HOSTNAME}:${PORT}`);
 });
