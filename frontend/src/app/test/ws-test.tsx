@@ -1,59 +1,60 @@
 'use client';
 
 import { useEffect, useState, useRef } from "react";
-// import WebSocket from "ws";
+import { webSocket } from "../../socket";
 
 const WsTest = () => {
-    const [data, setData] = useState();
     const [serverMessage, setServerMessage] = useState("");
     const [webSocketReady, setWebSocketReady] = useState(false);
 
-    const [webSocket, setWebSocket] = useState(new WebSocket("ws://localhost:8080/ws"));
-
     useEffect(() => {
-        console.log("testing useEffect");
-        webSocket.onopen = (event) => {
+        webSocket.on('connect_error', (err) => {
+            console.log(`socket: connect_error due to ${err.message}`);
+        });
+
+        webSocket.on('connect', () => {
             setWebSocketReady(true);
-            console.log("WebSocket is open now.");
-        };
+            console.log(`socket: connected with id ${webSocket.id}`);
+        });
 
-        webSocket.onmessage = function (event) {
-            setServerMessage(event.data);
-            console.log("Server message: ", serverMessage);
-        };
+        webSocket.on('message', (message) => {
+            setServerMessage(message.data);
+            console.log(`socket: message received '${message.data}'`);
+        });
 
-        webSocket.onclose = function (event) {
+        webSocket.on('disconnect', () => {
             setWebSocketReady(false);
-            setTimeout(() => {
-                setWebSocket(new WebSocket("ws://localhost:8080/ws"));
-            }, 1000);
-        };
+            console.log(`socket: disconnected`);
+        });
 
-        webSocket.onerror = function (err) {
-            console.log("Socket encountered error: ", err , "Closing socket");
+        webSocket.on('error', (err) => {
             setWebSocketReady(false);
-            webSocket.close();
-        };
+            console.log(`socket: error '${err.message}'`);
+            console.log(`socket: closing`);
+            webSocket.disconnect();
+        });
 
         return () => {
-            webSocket.close();
-        }
-
-    }, [webSocket])
-
+            webSocket.disconnect();
+        };
+    }, [webSocket]);
 
     if (!webSocketReady) {
-        return <h1>Could not connect to server ...</h1>
+        return null;
     } else if (serverMessage === "") {
-        return <h1>Waiting for server message ...</h1>
+        return (
+            <div>
+                <h1>Connected to server!</h1>
+                <h1>Waiting for message...</h1>
+            </div>
+        );
     } else {
         return (
             <div>
-                <h1>Websocket is connected with message: {serverMessage}</h1>
-
+                <h1>Connected to server!</h1>
+                <h1>Message received: {serverMessage}</h1>
             </div>
         );
-        
     }
 };
 

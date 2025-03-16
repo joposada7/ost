@@ -7,4 +7,7 @@ const nextConfig: NextConfig = {
   },
 };
 
+// Allow use of process.env
+import 'dotenv/config';
+
 export default nextConfig;

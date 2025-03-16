@@ -1,12 +1,11 @@
 'use client';
 
-
-
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet'
 import "leaflet/dist/leaflet.css"
 import { Icon } from 'leaflet';
 import { SatelliteList, SatelliteObj } from '../data/fetchData';
 import { useEffect, useState } from 'react';
+import { webSocket } from "../../socket";
 
 const Leaflet = () => {
 
@@ -17,41 +16,39 @@ const Leaflet = () => {
     //temp af variable for testing prod env
     const mapURL = false ? "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" :
     "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png";
-
-
+    
     const [markers, setMarkers] = useState<Array<SatelliteObj>>([]);
-    const [webSocketReady, setWebSocketReady] = useState(false);
-    const [webSocket, setWebSocket] = useState(new WebSocket("ws://localhost:8080/ws"));
+    const [webSocketReady, setWebSocketReady] = useState(webSocket.connected);
 
     useEffect(() => {
-        webSocket.onopen = (event) => {
+        webSocket.on('connect_error', (err) => {
+            console.log(`LOGS------WebSocket connect_error due to ${err.message}`);
+        });
+
+        webSocket.on('connect', () => {
             setWebSocketReady(true);
             console.log("LOGS------WebSocket is open now.");
-        };
+        });
 
-        webSocket.onmessage = event => {
-            const data = JSON.parse(event.data);
+        webSocket.on('message', (message) => {
+            const data = JSON.parse(message.data);
             console.log("LOGS------Server message: ", data);
             // data.forEach((satellite: SatelliteObj) => {});
-            setMarkers(data);
             // setMarkers(data);
-        };
+        });
 
-        webSocket.onclose = event => {
+        webSocket.on('disconnect', () => {
             setWebSocketReady(false);
-            setTimeout(() => {
-                setWebSocket(new WebSocket("ws://localhost:8080/ws"));
-            }, 1000);
-        };
+        });
 
-        webSocket.onerror = err => {
-            console.log("LOGS------Socket encountered error: ", err, "Closing socket");
+        webSocket.on('error', (err) => {
+            console.log("LOGS------Socket encountered error: ", err.message, "Closing socket");
             setWebSocketReady(false);
-            webSocket.close();
-        };
+            webSocket.disconnect();
+        });
 
         return () => {
-            webSocket.close();
+            webSocket.disconnect();
         };
     }, [webSocket]);
 
