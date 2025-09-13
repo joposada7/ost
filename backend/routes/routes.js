@@ -1,22 +1,28 @@
 require('module-alias/register');
+const fs = require('fs');
 const express = require('express');
 
-// Declare router
+// Declare env and routers
+const DOCKER_HOSTNAME = process.env.NEXT_PUBLIC_DOCKER_HOSTNAME || 'localhost';
 const router = express();
+const webRoutes = require('@routes/webRoutes.js');
 
 // CORS header
 router.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', `http://localhost:3000 http://${DOCKER_HOSTNAME}:3000`);
+    res.header('Access-Control-Allow-Origin', `http://localhost:3000 http://${DOCKER_HOSTNAME}:3000 http://localhost:8080 http://${DOCKER_HOSTNAME}:8080`);
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     next();
 });
 
-// Route
-const webRoutes = require('@routes/webRoutes.js').router;
-router.use('/', webRoutes);
+// Set routing
+router.use((req, res, next) => {
+    console.log(`routes: got protocol ${req.protocol} for url ${req.url}`);
+    next();
+})
+router.use('/', webRoutes.router);
 
 // No response anywhere, send 404
-router.use((req, res, next) => {
+router.use((req, res) => {
     res.status(404);
     if (req.accepts('html')) {
         res.send('Not found');
@@ -27,7 +33,6 @@ router.use((req, res, next) => {
     }
 });
 
-const DOCKER_HOSTNAME = process.env.DOCKER_HOSTNAME || 'localhost';
 const server = require('http').createServer(router);
 const socketio = require('socket.io');
 
@@ -35,7 +40,7 @@ const socketio = require('socket.io');
 const io = new socketio.Server(server, {
     transports: ['websocket', 'polling'],
     cors: {
-        origin: [`http://${DOCKER_HOSTNAME}:3000`],
+        origin: ['http://localhost:3000', 'http://localhost:8080', `http://${DOCKER_HOSTNAME}:3000`, `http://${DOCKER_HOSTNAME}:8080`, 'https://ost.posadaj.com', 'https://ost.posadaj.com:*'],
     },
 });
 io.on('connection', (socket) => {

@@ -4,7 +4,7 @@ services:
       context: ./frontend
       target: ${NODE_ENV}
     environment:
-      - NEXT_PUBLIC_DOCKER_HOSTNAME=${DOCKER_HOSTNAME}
+      - NEXT_PUBLIC_DOCKER_HOSTNAME=${NEXT_PUBLIC_DOCKER_HOSTNAME}
     volumes:
       - type: volume
         source: public-assets
@@ -28,7 +28,7 @@ services:
     build:
       context: ./backend
     environment:
-      - DOCKER_HOSTNAME=${DOCKER_HOSTNAME}
+      - NEXT_PUBLIC_DOCKER_HOSTNAME=${NEXT_PUBLIC_DOCKER_HOSTNAME}
       - NODE_ENV=${NODE_ENV}
     volumes_from:
       - frontend:ro
