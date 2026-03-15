@@ -17,6 +17,7 @@
     "socket.io": "^4.8.1"
   },
   "_moduleAliases": {
-    "@routes": "./routes"
+    "@routes": "./routes",
+    "@socket": "./socket"
   }
 }

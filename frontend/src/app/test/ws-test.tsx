@@ -17,21 +17,15 @@ const WsTest = () => {
             console.log(`socket: connected with id ${webSocket.id}`);
         });
 
-        webSocket.on('message', (message) => {
-            setServerMessage(message.data);
-            console.log(`socket: message received '${message.data}'`);
-        });
-
         webSocket.on('disconnect', () => {
             setWebSocketReady(false);
             console.log(`socket: disconnected`);
         });
 
-        webSocket.on('error', (err) => {
-            setWebSocketReady(false);
-            console.log(`socket: error '${err.message}'`);
-            console.log(`socket: closing`);
-            webSocket.disconnect();
+        // Log message from server
+        webSocket.on('message', (message) => {
+            setServerMessage(message.data);
+            console.log(`socket: message received '${message.data}'`);
         });
 
         return () => {
@@ -40,7 +34,11 @@ const WsTest = () => {
     }, [webSocket]);
 
     if (!webSocketReady) {
-        return null;
+        return (
+            <div>
+                <h1>Connecting to server...</h1>
+            </div>
+        )
     } else if (serverMessage === "") {
         return (
             <div>

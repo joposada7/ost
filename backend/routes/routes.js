@@ -33,38 +33,15 @@ router.use((req, res) => {
     }
 });
 
-const server = require('http').createServer(router);
-const socketio = require('socket.io');
+// Setup web server
+const webServer = require('http').createServer(router);
 
-// Set up websocket
-const io = new socketio.Server(server, {
-    transports: ['websocket', 'polling'],
-    cors: {
-        origin: ['http://localhost:3000', 'http://localhost:8080', `http://${DOCKER_HOSTNAME}:3000`, `http://${DOCKER_HOSTNAME}:8080`, 'https://ost.posadaj.com', 'https://ost.posadaj.com:*'],
-    },
-});
-io.on('connection', (socket) => {
-    console.log(`socket: connected with id ${socket.id}`);
-
-    socket.conn.once('upgrade', () => {
-        console.log(`socket: transport upgraded to ${socket.conn.transport.name}`);
-        console.log(`socket: client requested from '${socket.client.request.origin}'`);
-    });
-    
-    socket.on('disconnect', (reason) => {
-        console.log(`socket: connection with id ${socket.id} closed with reason '${reason}'`);
-    });
-    
-    // Emit a single message to the client on connection
-    console.log(`socket: transmitting message`);
-    io.emit('message', {
-        data: 'hello from the server!',
-    });
-});
+// Setup websocket server
+const socketServer = require('@socket/socket.js').server(webServer);
 
 // Start listening on backend
 const PORT = process.env.PORT || 8080;
-server.listen(PORT, () => {
+webServer.listen(PORT, () => {
     console.log(`> Running node.js backend on port ${PORT}`);
     console.log(`> Local:     http://localhost:${PORT}`);
     console.log(`> Network:   http://${DOCKER_HOSTNAME}:${PORT}`);
