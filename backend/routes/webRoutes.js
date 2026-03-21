@@ -2,12 +2,14 @@ const express = require('express');
 const path = require('path');
 const axios = require('axios');
 
-// Declare env and routers
-const DOCKER_HOSTNAME = process.env.NEXT_PUBLIC_DOCKER_HOSTNAME || 'localhost';
-const FRONTEND_TIMEOUT = process.env.NODE_ENV === 'production' ? process.env.FRONTEND_TIMEOUT : 0;
-const router = express();
+const INTERNAL_HOSTNAME = process.env.INTERNAL_HOSTNAME || 'localhost';
+const FRONTEND_TIMEOUT = process.env.FRONTEND_TIMEOUT || 0;
 
 // Serve static assets
+const router = express();
+router.use('/favicon.ico', (req, res, next) => {
+  res.send('');
+});
 router.use('/_next', express.static(path.resolve('/app/.next'), {index: false, extensions: [ 'js', 'css', 'png']}));
 router.use(express.static(path.resolve('/app/public')));
 
@@ -15,7 +17,7 @@ router.use(express.static(path.resolve('/app/public')));
 router.use((req, res, next) => {
   axios({
     method: req.method,
-    url: path.join(`http://${DOCKER_HOSTNAME}:3000`, req.url),
+    url: path.join(`http://${INTERNAL_HOSTNAME}:3000`, req.url),
     headers: req.headers,
     params: req.params,
     data: req.data,

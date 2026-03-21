@@ -1,6 +1,8 @@
 "use client";
 
-const URL = 'wss://ost.posadaj.com';
+const INTERNAL_HOSTNAME = process.env.INTERNAL_HOSTNAME || 'localhost';
+// const URL = `wss://${INTERNAL_HOSTNAME}:8080`;
+const URL = 'ws://localhost:8080';
 console.log(`socket: attempting connection at ${URL}`);
 
 const webSocket = new WebSocket(URL);
