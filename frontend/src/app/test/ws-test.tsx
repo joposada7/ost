@@ -1,35 +1,34 @@
 'use client';
 
 import { useEffect, useState, useRef } from "react";
-import { webSocket } from "../../socket";
+import webSocket from "../../socket";
 
 const WsTest = () => {
     const [serverMessage, setServerMessage] = useState("");
     const [webSocketReady, setWebSocketReady] = useState(false);
 
     useEffect(() => {
-        webSocket.on('connect_error', (err) => {
-            console.log(`socket: connect_error due to ${err.message}`);
-        });
-
-        webSocket.on('connect', () => {
+        console.log(`socket: readyState = ${webSocket.readyState}`);
+        webSocket.addEventListener('open', (event) => {
             setWebSocketReady(true);
-            console.log(`socket: connected with id ${webSocket.id}`);
-        });
+            console.log('socket: connected!');
 
-        webSocket.on('disconnect', () => {
+            // Debug: send a hello to the backend
+            webSocket.send('Hello to the backend server!');
+        });
+        webSocket.addEventListener('close', (event) => {
             setWebSocketReady(false);
-            console.log(`socket: disconnected`);
+            console.log(`socket: connection closed with code ${event.code} (${event.reason})`);
         });
 
         // Log message from server
-        webSocket.on('message', (message) => {
-            setServerMessage(message.data);
-            console.log(`socket: message received '${message.data}'`);
+        webSocket.addEventListener('message', (event) => {
+            setServerMessage(event.data);
+            console.log(`socket: message received '${event.data}'`);
         });
-
+        
         return () => {
-            webSocket.disconnect();
+            webSocket.close();
         };
     }, [webSocket]);
 
@@ -38,7 +37,7 @@ const WsTest = () => {
             <div>
                 <h1>Connecting to server...</h1>
             </div>
-        )
+        );
     } else if (serverMessage === "") {
         return (
             <div>

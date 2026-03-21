@@ -5,7 +5,7 @@ import "leaflet/dist/leaflet.css"
 import { Icon } from 'leaflet';
 import { SatelliteList, SatelliteObj } from '../data/fetchData';
 import { useEffect, useState } from 'react';
-import { webSocket } from "../../socket";
+import webSocket from '../../socket';
 
 const Leaflet = () => {
 
@@ -18,39 +18,39 @@ const Leaflet = () => {
     "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png";
     
     const [markers, setMarkers] = useState<Array<SatelliteObj>>([]);
-    const [webSocketReady, setWebSocketReady] = useState(webSocket.connected);
+    // const [webSocketReady, setWebSocketReady] = useState(webSocket.connected);
 
-    useEffect(() => {
-        webSocket.on('connect_error', (err) => {
-            console.log(`LOGS------WebSocket connect_error due to ${err.message}`);
-        });
+    // useEffect(() => {
+    //     webSocket.on('connect_error', (err) => {
+    //         console.log(`LOGS------WebSocket connect_error due to ${err.message}`);
+    //     });
 
-        webSocket.on('connect', () => {
-            setWebSocketReady(true);
-            console.log("LOGS------WebSocket is open now.");
-        });
+    //     webSocket.on('connect', () => {
+    //         setWebSocketReady(true);
+    //         console.log("LOGS------WebSocket is open now.");
+    //     });
 
-        webSocket.on('message', (message) => {
-            const data = JSON.parse(message.data);
-            console.log("LOGS------Server message: ", data);
-            // data.forEach((satellite: SatelliteObj) => {});
-            // setMarkers(data);
-        });
+    //     webSocket.on('message', (message) => {
+    //         const data = JSON.parse(message.data);
+    //         console.log("LOGS------Server message: ", data);
+    //         // data.forEach((satellite: SatelliteObj) => {});
+    //         // setMarkers(data);
+    //     });
 
-        webSocket.on('disconnect', () => {
-            setWebSocketReady(false);
-        });
+    //     webSocket.on('disconnect', () => {
+    //         setWebSocketReady(false);
+    //     });
 
-        webSocket.on('error', (err) => {
-            console.log("LOGS------Socket encountered error: ", err.message, "Closing socket");
-            setWebSocketReady(false);
-            webSocket.disconnect();
-        });
+    //     webSocket.on('error', (err) => {
+    //         console.log("LOGS------Socket encountered error: ", err.message, "Closing socket");
+    //         setWebSocketReady(false);
+    //         webSocket.disconnect();
+    //     });
 
-        return () => {
-            webSocket.disconnect();
-        };
-    }, [webSocket]);
+    //     return () => {
+    //         webSocket.disconnect();
+    //     };
+    // }, [webSocket]);
 
     console.log(markers[0]?.latitude, markers[0]?.longitude);
     return (
