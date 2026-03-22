@@ -23,4 +23,4 @@ const createSocketServer = (webServer) => {
     return wss
 };
 
-module.exports.server = createSocketServer;
+module.exports.createSocketServer = createSocketServer;

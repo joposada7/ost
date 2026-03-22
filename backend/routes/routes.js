@@ -2,7 +2,7 @@ require('module-alias/register');
 const fs = require('fs');
 const express = require('express');
 
-const INTERNAL_HOSTNAME = process.env.INTERNAL_HOSTNAME || 'localhost';
+const INTERNAL_HOSTNAME = process.env.INTERNAL_HOSTNAME;
 
 // Set routing
 const router = express();
@@ -38,6 +38,7 @@ if (process.env.NODE_ENV == 'development') {
         console.log(`>   Connect via http://localhost:3000`);
     });
 
+    // DEBUG: Ping sockets
     ws = require('ws');
     function pingSockets() {
         socketServer.clients.forEach((client) => {

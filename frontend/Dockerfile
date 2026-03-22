@@ -1,8 +1,8 @@
-FROM node:22.14.0 AS base
+FROM node:25.8.1-bullseye AS base
 ENV NEXT_TELEMETRY_DISABLED=1
 
+ENV NODE_ENV=${NODE_ENV}
 ENV PORT=3000
-EXPOSE 3000
 
 # Build
 FROM base AS build
@@ -18,6 +18,7 @@ WORKDIR /app
 
 COPY --from=build /app .
 
+EXPOSE ${PORT}
 CMD ["npm", "run", "dev"]
 
 # Production
@@ -27,4 +28,5 @@ WORKDIR /app
 COPY --from=build /app .
 
 RUN npm run build
+EXPOSE ${PORT}
 CMD ["npm", "run", "start"]

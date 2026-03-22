@@ -1,11 +1,12 @@
-FROM node:22.14.0
+FROM node:25.8.1-bullseye
+
+ENV NODE_ENV=${NODE_ENV}
+ENV PORT=8080
 
 WORKDIR /backend
 
 COPY . .
 RUN npm ci
 
-ENV PORT=8080
-EXPOSE 8080
-
+EXPOSE ${PORT}
 CMD ["node", "."]

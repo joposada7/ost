@@ -3,8 +3,8 @@ services:
     build:
       context: ./frontend
       target: ${NODE_ENV}
-    environment:
-      - INTERNAL_HOSTNAME=${INTERNAL_HOSTNAME}
+    env_file:
+      - ./.env
     volumes:
       - type: volume
         source: public-assets
@@ -27,9 +27,8 @@ services:
   backend:
     build:
       context: ./backend
-    environment:
-      - NODE_ENV=${NODE_ENV}
-      - INTERNAL_HOSTNAME=${INTERNAL_HOSTNAME}
+    env_file:
+      - ./.env
     volumes_from:
       - frontend:ro
     ports:
