@@ -32,7 +32,7 @@ if (process.env.NODE_ENV == 'development') {
     // Listen on 8080
     const PORT = process.env.PORT || 8080;
     const webServer = require('http').createServer(router);
-    const socketServer = require('@socket/socket.js').server(webServer);
+    const socketServer = require('@socket/socket.js').createSocketServer(webServer);
     webServer.listen(PORT, () => {
         console.log(`>   Running development node.js backend on port ${PORT}`);
         console.log(`>   Connect via http://localhost:3000`);

@@ -1,8 +1,6 @@
 "use client";
 
-const INTERNAL_HOSTNAME = process.env.INTERNAL_HOSTNAME || 'ost.posadaj.com';
-const wsProtocol = process.env.NODE_ENV == 'development' ? 'ws' : 'wss';
-const URL = `${wsProtocol}://${INTERNAL_HOSTNAME}`;
+const URL = process.env.NODE_ENV == 'development' ? 'ws://localhost:8080' : 'wss://ost.posadaj.com';
 console.log(`socket: attempting connection at ${URL}`);
 
 const webSocket = new WebSocket(URL);
